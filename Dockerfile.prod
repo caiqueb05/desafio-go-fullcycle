@@ -1,0 +1,18 @@
+FROM golang:alpine AS builder
+
+WORKDIR /home
+
+RUN mkdir hello && cd hello && go mod init hello
+
+COPY hello.go ./hello
+
+CMD cd /home/hello && go run hello.go && go build -o ./hello
+
+# Etapa de execução
+FROM scratch
+
+WORKDIR /home
+
+COPY --from=builder /home/hello .
+
+ENTRYPOINT ["/home/hello"]
