@@ -2,13 +2,13 @@ FROM golang:alpine AS builder
 
 WORKDIR /home
 
-RUN mkdir hello && cd hello && go mod init hello
+RUN go mod init hello
 
-COPY hello.go ./hello
+COPY hello.go .
 
-CMD cd /home/hello && go run hello.go && go build -o ./hello
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o hello .
 
-# Etapa de execução
+# Execution stage
 FROM scratch
 
 WORKDIR /home
@@ -16,3 +16,4 @@ WORKDIR /home
 COPY --from=builder /home/hello .
 
 ENTRYPOINT ["/home/hello"]
+
